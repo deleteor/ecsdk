@@ -1,4 +1,4 @@
-package pdd
+package openpdd
 
 import (
 	"crypto/md5"

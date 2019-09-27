@@ -1,4 +1,4 @@
-package pdd
+package openpdd
 
 // func main(){
 // 	p := pdd.NewPdd(&pdd.Config{

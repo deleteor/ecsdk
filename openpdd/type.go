@@ -1,4 +1,4 @@
-package pdd
+package openpdd
 
 // MethodType ddk接口
 type MethodType string
