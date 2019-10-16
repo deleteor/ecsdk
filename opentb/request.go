@@ -3,7 +3,6 @@ package opentb
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,14 +19,12 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 	if requestParams["sign_method"] == "md5" {
 		sign := c.SignMD5(requestParams)
 		requestParams["sign"] = sign
-	} else if requestParams["sign_method"] == "hmac" {
+	}
+	if requestParams["sign_method"] == "hmac" {
 		sign := c.SignHMAC(requestParams)
 		requestParams["sign"] = sign
-	} else {
-		fmt.Errorf("签名方法配置错误")
 	}
 
-	//
 	values := url.Values{}
 	for k, v := range requestParams {
 		r := ""
@@ -41,7 +38,7 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 	}
 	// SZGSGY - 2019 - -679
 	requestURL := ""
-	if c.UseHTTPS {
+	if c.UseHTTPS != 0 {
 		requestURL = httpsURL
 	} else {
 		requestURL = httpURL

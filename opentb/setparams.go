@@ -8,17 +8,18 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"git.hp6h2.cn/gobin/commons/gtype/boolx"
 )
 
 // Client 请求体
 type Client struct {
 	AppKey     string
 	AppSecret  string
-	UseHTTPS   bool
+	UseHTTPS   boolx.Bool
 	Method     string
 	SignMethod string
 	Format     string
-	NumIids    string
 }
 
 const (
@@ -27,6 +28,28 @@ const (
 	// httpsURL is for HTTPS REST API URL.
 	httpsURL string = "https://eco.taobao.com/router/rest"
 )
+
+// NewClient ..
+func NewClient(AppKey string, SecretKey string) *Client {
+	return &Client{
+		AppKey:     AppKey,
+		AppSecret:  SecretKey,
+		UseHTTPS:   1,
+		SignMethod: "md5",
+		Format:     "json",
+	}
+}
+
+// SetAppKey 设置新配置
+func (c *Client) SetAppKey(AppKey string, SecretKey string) {
+	c.AppKey = AppKey
+	c.AppSecret = SecretKey
+}
+
+// SetHTTPS 设置新配置
+func (c *Client) SetHTTPS(f boolx.Bool) {
+	c.UseHTTPS = f
+}
 
 // SetCommonParams 设置通用的Map
 func (c *Client) SetCommonParams() map[string]interface{} {
