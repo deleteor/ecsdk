@@ -63,6 +63,7 @@ func (c *Client) SetCommonParams() map[string]interface{} {
 	t := time.Now()
 	params["format"] = c.Format
 	params["v"] = "2.0"
+	params["method"] = c.Method
 	params["sign_method"] = c.SignMethod
 	params["app_key"] = c.AppKey
 	params["timestamp"] = fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
