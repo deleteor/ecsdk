@@ -74,9 +74,7 @@ func (c *Client) SetCommonParams() map[string]interface{} {
 func (c *Client) SetRequestParams(requestParams, commonParams map[string]interface{}) map[string]interface{} {
 	for k := range commonParams {
 		requestParams[k] = commonParams[k]
-		// fmt.Printf("---%s", requestParams)
 	}
-	fmt.Printf("%s", requestParams)
 	return requestParams
 }
 
