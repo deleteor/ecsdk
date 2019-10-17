@@ -30,11 +30,12 @@ const (
 )
 
 // NewClient ..
-func NewClient(AppKey string, SecretKey string) *Client {
+func NewClient(AppKey, SecretKey, Method string) *Client {
 	return &Client{
 		AppKey:     AppKey,
 		AppSecret:  SecretKey,
 		UseHTTPS:   1,
+		Method:     Method,
 		SignMethod: "md5",
 		Format:     "json",
 	}
@@ -49,6 +50,11 @@ func (c *Client) SetAppKey(AppKey string, SecretKey string) {
 // SetHTTPS 设置新配置
 func (c *Client) SetHTTPS(f boolx.Bool) {
 	c.UseHTTPS = f
+}
+
+// SetMethod 设置淘宝请求接口
+func (c *Client) SetMethod(m string) {
+	c.Method = m
 }
 
 // SetCommonParams 设置通用的Map
