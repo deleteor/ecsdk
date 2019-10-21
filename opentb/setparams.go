@@ -20,6 +20,7 @@ type Client struct {
 	Method     string
 	SignMethod string
 	Format     string
+	Session    string
 }
 
 const (
@@ -38,6 +39,7 @@ func NewClient(AppKey, SecretKey, Method string) *Client {
 		Method:     Method,
 		SignMethod: "md5",
 		Format:     "json",
+		Session:    "",
 	}
 }
 
@@ -57,6 +59,11 @@ func (c *Client) SetMethod(m string) {
 	c.Method = m
 }
 
+// SetSessionKey 设置淘宝请求接口
+func (c *Client) SetSessionKey(session string) {
+	c.Session = session
+}
+
 // SetCommonParams 设置通用的Map
 func (c *Client) SetCommonParams() map[string]interface{} {
 	params := make(map[string]interface{})
@@ -67,6 +74,7 @@ func (c *Client) SetCommonParams() map[string]interface{} {
 	params["sign_method"] = c.SignMethod
 	params["app_key"] = c.AppKey
 	params["timestamp"] = fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+	params["session"] = c.Session
 	return params
 }
 
