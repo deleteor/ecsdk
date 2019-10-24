@@ -36,7 +36,7 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 		}
 		values.Set(k, r)
 	}
-	// SZGSGY - 2019 - -679
+
 	requestURL := ""
 	if c.UseHTTPS != 0 {
 		requestURL = httpsURL

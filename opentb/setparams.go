@@ -17,7 +17,7 @@ type Client struct {
 	AppKey     string
 	AppSecret  string
 	UseHTTPS   boolx.Bool
-	Method     string
+	Method     TaoBaoURI
 	SignMethod string
 	Format     string
 	Session    string
@@ -31,15 +31,13 @@ const (
 )
 
 // NewClient ..
-func NewClient(AppKey, SecretKey, Method string) *Client {
+func NewClient(AppKey, SecretKey string) *Client {
 	return &Client{
 		AppKey:     AppKey,
 		AppSecret:  SecretKey,
 		UseHTTPS:   1,
-		Method:     Method,
 		SignMethod: "md5",
 		Format:     "json",
-		Session:    "",
 	}
 }
 
@@ -55,7 +53,7 @@ func (c *Client) SetHTTPS(f boolx.Bool) {
 }
 
 // SetMethod 设置淘宝请求接口
-func (c *Client) SetMethod(m string) {
+func (c *Client) SetMethod(m TaoBaoURI) {
 	c.Method = m
 }
 
@@ -99,8 +97,12 @@ func (c *Client) SortParamsToStr(params map[string]interface{}) string {
 		switch params[k].(type) {
 		case int:
 			r = strconv.Itoa(params[k].(int))
+		case float64:
+			r = strconv.FormatFloat(params[k].(float64), 'E', -1, 64)
 		case string:
 			r = params[k].(string)
+		case TaoBaoURI:
+			r = string(params[k].(TaoBaoURI))
 		}
 		str += k + r
 	}
@@ -115,8 +117,12 @@ func (c *Client) MakeRequestBody(params map[string]interface{}) (io.Reader, erro
 		switch v.(type) {
 		case int:
 			r = strconv.Itoa(v.(int))
+		case float64:
+			r = strconv.FormatFloat(v.(float64), 'E', -1, 64)
 		case string:
 			r = v.(string)
+		case TaoBaoURI:
+			r = string(v.(TaoBaoURI))
 		}
 		values.Set(k, r)
 	}
