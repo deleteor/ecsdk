@@ -1,6 +1,7 @@
 package opentb
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
@@ -127,4 +128,24 @@ func (c *Client) MakeRequestBody(params map[string]interface{}) (io.Reader, erro
 		values.Set(k, r)
 	}
 	return strings.NewReader(values.Encode()), nil
+}
+
+// GetParams 获取请求params 去除0值参数
+func GetParams(in interface{}) map[string]interface{} {
+	params := make(map[string]interface{})
+	j, _ := json.Marshal(in)
+	json.Unmarshal(j, &params)
+	for k, par := range params {
+		switch par.(type) {
+		case string:
+			if par == "" {
+				delete(params, k)
+			}
+		case float64:
+			if par == 0.00 {
+				delete(params, k)
+			}
+		}
+	}
+	return params
 }
