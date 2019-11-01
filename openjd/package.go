@@ -14,6 +14,7 @@ type JDSDKAPI interface {
 	GetCategoryList(UriQuery string) *CateGoryResult
 	GetGoodsJFen(param string) *JFRestult
 	GetOrders(ParamJsons string) *OrderResult
+	GetBonusOrders(ParamJsons string) *BonusOrderResult
 	SetSignJointUrlParam(Method string, param string) *Jdsdk
 }
 
