@@ -7,13 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gylm-example/thirdparty/suning/constants"
-	"gylm-example/thirdparty/suning/requests"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"git.hp6h2.cn/gobin/SDK/suning/constants"
+	"git.hp6h2.cn/gobin/SDK/suning/requests"
 )
 
 type Params map[string]interface{}
@@ -76,9 +77,9 @@ func (c TopClient) Do(r requests.ITopRequest, respModel interface{}) error {
 	SysParams["api_version"] = constants.VERSION
 
 	// 获取业务参数
-	paramsArray := make(map[string]interface{},1)
-	paramsArray2 := make(map[string]interface{},1)
-	paramsArray3 := make(map[string]interface{},1)
+	paramsArray := make(map[string]interface{}, 1)
+	paramsArray2 := make(map[string]interface{}, 1)
+	paramsArray3 := make(map[string]interface{}, 1)
 	paramsArray3[r.BizName()] = form
 	paramsArray2["sn_body"] = paramsArray3
 	paramsArray["sn_request"] = paramsArray2
@@ -90,7 +91,7 @@ func (c TopClient) Do(r requests.ITopRequest, respModel interface{}) error {
 	signString := sign(SysParams)
 	requestURL := makeRequestURL(serverUrl, r.APIName())
 
-	req, err := http.NewRequest("POST", requestURL,strings.NewReader(body))
+	req, err := http.NewRequest("POST", requestURL, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("AppMethod", r.APIName())
 	req.Header.Set("AppRequestTime", date)
@@ -127,10 +128,10 @@ func parseResponseBody(resp *http.Response, respModel interface{}) error {
 	case constants.FORMAT_JSON:
 		return json.Unmarshal(buf, &respModel)
 	case constants.FORMAT_XML:
-		return  fmt.Errorf("unimplemented XML parser.")
+		return fmt.Errorf("unimplemented XML parser.")
 		//panic("unimplemented XML parser.")
 	default:
-		return  fmt.Errorf("unimplemented " + responseFormat + " parser.")
+		return fmt.Errorf("unimplemented " + responseFormat + " parser.")
 		//panic("unimplemented " + responseFormat + " parser.")
 	}
 }
@@ -143,11 +144,11 @@ func makeRequestURL(serverUrl string, apiName string) string {
 // signForm 签名请求参数
 
 func sign(sysParams Params) string {
-	sortKeys := [6]string{"secret_key","method","date","app_key","api_version","post_field"}
+	sortKeys := [6]string{"secret_key", "method", "date", "app_key", "api_version", "post_field"}
 	singStr := ""
-	for _,key := range sortKeys {
+	for _, key := range sortKeys {
 		if val := getString(sysParams[key]); val != "" {
-			singStr +=  val
+			singStr += val
 		}
 	}
 	return createSign(singStr)
