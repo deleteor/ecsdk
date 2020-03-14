@@ -18,23 +18,23 @@ const (
 // OrderListQueryModel 获取订单信息列表 应用级请求参数
 type OrderListQueryModel struct {
 	// Status  否 订单状态:0-不合格，1-待定，2-已完结，该参数不设置默认代表全部状态
-	Status uint `json:"status"`
+	Status uint `json:"status,omitempty"`
 	// OrderTimeStart  否 订单时间起始 时间戳 单位毫秒
-	OrderTimeStart int64 `json:"orderTimeStart"`
+	OrderTimeStart int64 `json:"orderTimeStart,omitempty"`
 	// OrderTimeEnd  否 订单时间结束 时间戳 单位毫秒
-	OrderTimeEnd int64 `json:"orderTimeEnd"`
+	OrderTimeEnd int64 `json:"orderTimeEnd,omitempty"`
 	// Page  是 页码：从1开始
-	Page int `json:"page"`
+	Page int `json:"page,omitempty"`
 	// PageSize  否 页面大小：默认20
-	PageSize int `json:"pageSize"`
+	PageSize int `json:"pageSize,omitempty"`
 	// RequestID  是 请求id：调用方自行定义，用于追踪请求，单次请求唯一，建议使用UUID
-	RequestID string `json:"requestId"`
+	RequestID string `json:"requestId,omitempty"`
 	// UpdateTimeStart  否 更新时间-起始 时间戳 单位毫秒
-	UpdateTimeStart int64 `json:"updateTimeStart"`
+	UpdateTimeStart int64 `json:"updateTimeStart,omitempty"`
 	// UpdateTimeEnd  否 下单时间-结束 时间戳 单位毫秒
-	UpdateTimeEnd int64 `json:"updateTimeEnd"`
+	UpdateTimeEnd int64 `json:"updateTimeEnd,omitempty"`
 	// OrderSnList 否 订单号列表：当传入订单号列表时，订单时间和更新时间区间可不传入
-	OrderSnList []string `json:"orderSnList"`
+	OrderSnList []string `json:"orderSnList,omitempty"`
 }
 
 // QueryOrderList 获取订单信息列表
@@ -45,6 +45,7 @@ func (c *Client) QueryOrderList(in *OrderListQueryModel) (*OrderListResponse, er
 	c.SetVersion(UnionOrderVersion)
 
 	params := GetParams(in)
+	fmt.Println("params", params)
 	mapParams := make(map[string]interface{})
 	mapParams["queryModel"] = params
 	result, err := c.DoRequest(mapParams)
