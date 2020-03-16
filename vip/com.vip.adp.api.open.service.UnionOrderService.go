@@ -45,7 +45,7 @@ func (c *Client) QueryOrderList(in *OrderListQueryModel) (*OrderListResponse, er
 	c.SetVersion(UnionOrderVersion)
 
 	params := GetParams(in)
-	fmt.Println("params", params)
+	// fmt.Println("params", params)
 	mapParams := make(map[string]interface{})
 	mapParams["queryModel"] = params
 	result, err := c.DoRequest(mapParams)
