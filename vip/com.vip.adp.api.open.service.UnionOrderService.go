@@ -28,7 +28,7 @@ type OrderListQueryModel struct {
 	// PageSize  否 页面大小：默认20
 	PageSize int `json:"pageSize,omitempty"`
 	// RequestID  是 请求id：调用方自行定义，用于追踪请求，单次请求唯一，建议使用UUID
-	RequestID string `json:"requestId,omitempty"`
+	RequestID string `json:"requestId"`
 	// UpdateTimeStart  否 更新时间-起始 时间戳 单位毫秒
 	UpdateTimeStart int64 `json:"updateTimeStart,omitempty"`
 	// UpdateTimeEnd  否 下单时间-结束 时间戳 单位毫秒

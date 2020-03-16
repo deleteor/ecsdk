@@ -127,17 +127,17 @@ func GetParams(in interface{}) map[string]interface{} {
 	params := make(map[string]interface{})
 	j, _ := json.Marshal(in)
 	json.Unmarshal(j, &params)
-	for k, par := range params {
-		switch par.(type) {
-		case string:
-			if par == "" {
-				delete(params, k)
-			}
-		case float64:
-			if par == 0.00 {
-				delete(params, k)
-			}
-		}
-	}
+	// for k, par := range params {
+	// 	switch par.(type) {
+	// 	case string:
+	// 		if par == "" {
+	// 			delete(params, k)
+	// 		}
+	// 	case float64:
+	// 		if par == 0.00 {
+	// 			delete(params, k)
+	// 		}
+	// 	}
+	// }
 	return params
 }
