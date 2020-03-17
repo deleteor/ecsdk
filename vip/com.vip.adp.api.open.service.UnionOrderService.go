@@ -13,6 +13,8 @@ const (
 	UnionOrderVersion string = "1.0.0"
 	// UnionOrderMethodName 获取订单信息列表
 	UnionOrderMethodName string = "orderList"
+	// RefundOrderMethodName 获取订单信息列表
+	RefundOrderMethodName string = "refundOrderList"
 )
 
 // OrderListQueryModel 获取订单信息列表 应用级请求参数
@@ -54,6 +56,32 @@ func (c *Client) QueryOrderList(in *OrderListQueryModel) (*OrderListResponse, er
 	}
 
 	out := &UnionOrderServiceOrderListResponse{}
+	outByte, _ := json.Marshal(result)
+	json.Unmarshal(outByte, out)
+	if out.ReturnCode != 0 {
+		er := fmt.Sprintf("获取订单信息失败 code=%d\n", out.ReturnCode)
+		return nil, errors.New(er)
+	}
+	return &out.Result, nil
+}
+
+// QueryRefundOrderList 获取订单信息列表
+func (c *Client) QueryRefundOrderList(in *RefundOrderRequest) (*RefundOrderInfoList, error) {
+
+	c.SetServiceName(UnionOrderServiceName)
+	c.SetVersion(UnionOrderVersion)
+	c.SetMethod(RefundOrderMethodName)
+
+	params := GetParams(in)
+	// fmt.Println("params", params)
+	mapParams := make(map[string]interface{})
+	mapParams["request"] = params
+	result, err := c.DoRequest(mapParams)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &UnionOrderServiceRefundOrderResponse{}
 	outByte, _ := json.Marshal(result)
 	json.Unmarshal(outByte, out)
 	if out.ReturnCode != 0 {
@@ -167,4 +195,94 @@ type AfterSaleDetailInfo struct {
 	AfterSaleType int `json:"afterSaleType"`
 	// afterSaleFinishTime	Long	否	售后完成时间，时间戳，单位：毫秒，无售后时为空
 	AfterSaleFinishTime int64 `json:"afterSaleFinishTime"`
+}
+
+// RefundOrderRequest 联盟维权订单请求参数
+type RefundOrderRequest struct {
+	// searchType Integer 查询类型:0-维权发起时间，1-维权完成时间（佣金扣除入账时间），2-佣金扣除结算时间
+	SearchType int `json:"searchType"`
+	// searchTimeStart Long 目标时间起始：时间戳，单位毫秒; 当searchType=0时，为维权发起时间， 当searchType=1时，为维权完成时间（佣金扣除入账时间）， 当searchType=2时，为佣金扣除结算时间
+	SearchTimeStart int64 `json:"searchTimeStart"`
+	// searchTimeEnd Long 目标时间结束：时间戳，单位毫秒; 当searchType=0时，为维权发起时间， 当searchType=1时，为维权完成时间（佣金扣除入账时间）， 当searchType=2时，为佣金扣除结算时间
+	SearchTimeEnd int64 `json:"searchTimeEnd"`
+	// orderSns List<String> 目标订单号集合:当指定订单号集合时，目标时间区间可以不传,否则必须指定目标时间区间
+	OrderSns []string `json:"orderSns"`
+	// page Integer 当前页
+	Page int `json:"page"`
+	// pageSize Integer 分页大小：默认20，最大100
+	PageSize int `json:"pageSize"`
+	// requestId String 请求id：调用方自行定义，用于追踪请求，单次请求唯一，建议使用UUID
+	RequestID string `json:"requestId"`
+}
+
+// UnionOrderServiceRefundOrderResponse 订单响应
+type UnionOrderServiceRefundOrderResponse struct {
+	ReturnCode int                 `json:"returnCode"`
+	Result     RefundOrderInfoList `json:"result"`
+}
+
+// RefundOrderInfoList 联盟维权订单信息
+type RefundOrderInfoList struct {
+	// refundOrderInfoList List<RefundOrderInfo> 联盟维权订单信息
+	RefundOrderInfoList []RefundOrderInfo `json:"refundOrderInfoList"`
+	// total Integer 总记录数
+	Total int `json:"total"`
+	// page Integer 当前页
+	Page int `json:"page"`
+	// pageSize Integer 分页大小
+	PageSize int `json:"pageSize"`
+}
+
+// RefundOrderInfo 联盟维权订单信息
+type RefundOrderInfo struct {
+	// orderSn	String	订单号
+	OrderSn string `json:"orderSn"`
+	// applyTime	Long	申请时间:时间戳，单位毫秒
+	ApplyTime int64 `json:"applyTime"`
+	// refundType	Integer	维权类型：1-退货，2-换货
+	RefundType int `json:"refundType"`
+	// commissionTotalCost	String	订单计佣金额:单位元
+	CommissionTotalCost string `json:"commissionTotalCost"`
+	// commission	String	订单佣金：单位元
+	Commission string `json:"commission"`
+	// goodsCount	Integer	商品数量
+	GoodsCount int `json:"goodsCount"`
+	// commissionEnterTxn	String	维权返还佣金的入账流水号
+	CommissionEnterTxn string `json:"commissionEnterTxn"`
+	// commissionEnterTime	Long	维权返还佣金的入账时间: 时间戳，单位毫秒
+	CommissionEnterTime int64 `json:"commissionEnterTime"`
+	// commissionSettledTime	Long	维权返回佣金的结算时间：时间戳，单位毫秒
+	CommissionSettledTime int64 `json:"commissionSettledTime"`
+	// refundOrderDetails	List<RefundOrderDetail>	维权订单明细
+	RefundOrderDetails []RefundOrderDetail `json:"refundOrderDetails"`
+	// userId	Long	订单归属人id
+	UserID int64 `json:"userId"`
+	// orderTime	Long	订单时间:时间戳，单位毫秒
+	OrderTime int64 `json:"orderTime"`
+	// originCommEnterTime	Long	订单入账时间：发起维权之前入账时间，时间戳，单位毫秒
+	OriginCommEnterTime int64 `json:"originCommEnterTime"`
+	// originCommEnterTxn	String	订单入账流水：发起维权之前入账流水号
+	OriginCommEnterTxn string `json:"originCommEnterTxn"`
+	// settled	Integer	售后订单结算状态：0-未结算，1-已结算
+	Settled int `json:"settled"`
+	// afterSaleSn	String	售后单号
+	AfterSaleSn string `json:"afterSaleSn"`
+	// afterSaleStatus	Short	售后单状态:1-售后中，2-售后完成，3-售后取消
+	AfterSaleStatus uint `json:"afterSaleStatus"`
+}
+
+// RefundOrderDetail 维权订单明细
+type RefundOrderDetail struct {
+	// goodsId	String	商品id
+	GoodsID string `json:"goodsId"`
+	// sizeId	String	商品尺码id
+	SizeID string `json:"sizeId"`
+	// goodsPrice	String	商品价格：元
+	GoodsPrice string `json:"goodsPrice"`
+	// goodsCount	Integer	维权商品数量
+	GoodsCount int `json:"goodsCount"`
+	// commission	String	维权商品佣金
+	Commission string `json:"commission"`
+	// totalCost	String	维权商品计佣金额
+	TotalCost string `json:"totalCost"`
 }
