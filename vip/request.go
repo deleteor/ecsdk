@@ -3,7 +3,6 @@ package vip
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,7 +18,6 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 	c.Sign = c.HMACMD5(commonParams, string(strParams))
 	commonParams["sign"] = c.Sign
 
-	fmt.Println("sign>", commonParams["sign"])
 	values := url.Values{}
 	for k, v := range commonParams {
 		r := ""
@@ -39,7 +37,6 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 	} else {
 		requestURL = httpURL + "?" + values.Encode()
 	}
-	fmt.Println("url>", requestURL)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
