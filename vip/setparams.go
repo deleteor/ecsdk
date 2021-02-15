@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"git.hp6h2.cn/gobin/commons/gtype/boolx"
 )
 
 // Client 请求体
@@ -21,7 +19,7 @@ type Client struct {
 	Format    string
 	AppKey    string
 	AppSecret string
-	UseHTTPS  boolx.Bool
+	UseHTTPS  bool
 	Sign      string
 }
 
@@ -37,7 +35,7 @@ func NewClient(AppKey, SecretKey string) *Client {
 	return &Client{
 		AppKey:    AppKey,
 		AppSecret: SecretKey,
-		UseHTTPS:  1,
+		UseHTTPS:  true,
 		Format:    "JSON",
 		Timestamp: strconv.FormatInt(time.Now().Unix(), 10),
 		// Timestamp: "1583834213",
@@ -50,7 +48,7 @@ func (c *Client) SetAppKey(AppKey, AppSecret string) {
 }
 
 // SetHTTPS 设置新配置
-func (c *Client) SetHTTPS(f boolx.Bool) {
+func (c *Client) SetHTTPS(f bool) {
 	c.UseHTTPS = f
 }
 

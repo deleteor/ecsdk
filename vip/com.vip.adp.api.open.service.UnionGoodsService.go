@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -37,7 +35,6 @@ func (c *Client) QueryGoodsList(in *GoodsInfoRequest) (*GoodsInfoResponse, error
 	mapParams["request"] = params
 	result, err := c.DoRequest(mapParams)
 	if err != nil {
-		logrus.Errorf("获取商品信息失败 %s", err)
 		return nil, err
 	}
 

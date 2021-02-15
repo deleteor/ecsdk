@@ -1,4 +1,4 @@
-package vip
+package tb
 
 import (
 	"crypto/tls"
@@ -10,16 +10,23 @@ import (
 	"strings"
 )
 
-// DoRequest 执行请求
+// DoRequest 开始请求  传入参数：一个包含所有参数的map  返回参数：返回一个map
 func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{}, error) {
 	commonParams := c.SetCommonParams()
-	strParams, _ := json.Marshal(params)
+	requestParams := c.SetRequestParams(params, commonParams)
+
 	// 调用签名
-	c.Sign = c.HMACMD5(commonParams, string(strParams))
-	commonParams["sign"] = c.Sign
+	if requestParams["sign_method"] == "md5" {
+		sign := c.SignMD5(requestParams)
+		requestParams["sign"] = sign
+	}
+	if requestParams["sign_method"] == "hmac" {
+		sign := c.SignHMAC(requestParams)
+		requestParams["sign"] = sign
+	}
 
 	values := url.Values{}
-	for k, v := range commonParams {
+	for k, v := range requestParams {
 		r := ""
 		switch v.(type) {
 		case int:
@@ -30,30 +37,32 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 		values.Set(k, r)
 	}
 
-	// 拼接url
 	requestURL := ""
 	if c.UseHTTPS != false {
-		requestURL = httpsURL + "?" + values.Encode()
+		requestURL = httpsURL
 	} else {
-		requestURL = httpURL + "?" + values.Encode()
+		requestURL = httpURL
 	}
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	requestClient := &http.Client{Transport: tr}
 
-	requestBody := marshal(params)
-	req, err := http.NewRequest("POST", requestURL, strings.NewReader(requestBody))
+	requestBody, err := c.MakeRequestBody(requestParams)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Content-Type", "application/json")
+	req, err := http.NewRequest("POST", requestURL, requestBody)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := requestClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -63,15 +72,7 @@ func (c *Client) DoRequest(params map[string]interface{}) (map[string]interface{
 	if strings.Contains(responseStr, "error") {
 
 	}
-	info := make(map[string]interface{})
-	json.Unmarshal(body, &info)
-	return info, nil
-}
-
-func marshal(obj interface{}) string {
-	var bytes, err = json.Marshal(obj)
-	if err != nil {
-		return ""
-	}
-	return string(bytes)
+	tbPwd := make(map[string]interface{})
+	json.Unmarshal(body, &tbPwd)
+	return tbPwd, nil
 }
